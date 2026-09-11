@@ -338,6 +338,7 @@
   .field{display:flex;flex-direction:column;gap:6px;position:relative;}
   .field.full{grid-column:1 / -1;}
   label{font-size:.78rem;font-weight:700;letter-spacing:.03em;color:var(--bark-soft);}
+  .required-mark{color:var(--raspberry);margin-left:2px;}
   input,select,textarea{
     font-family:var(--font-body);font-size:.98rem;color:var(--bark);
     border:none;border-bottom:1px solid var(--line);background:transparent;
@@ -1358,21 +1359,21 @@
     html += '<form id="contactForm">';
 
     html += '<fieldset><legend>'+c.infoTitle+'</legend><div class="form-grid">';
-    html += field(c.fFirst,'text','fname');
-    html += field(c.fLast,'text','lname');
+    html += field(c.fFirst,'text','fname',null,true);
+    html += field(c.fLast,'text','lname',null,true);
     html += field(c.fEmail,'email','email');
-    html += field(c.fPhone,'tel','phone');
+    html += field(c.fPhone,'tel','phone',null,true);
     html += '</div></fieldset>';
 
     html += '<fieldset><legend>'+c.eventTitle+'</legend><div class="form-grid">';
-    html += '<div class="field"><label>'+c.fType+'</label><select name="etype" required>';
+    html += '<div class="field"><label>'+c.fType+'<span class="required-mark">*</span></label><select name="etype" required>';
     html += '<option value="" disabled selected>'+c.fTypePlaceholder+'</option>';
     c.fTypeOptions.forEach(function(o){ html += '<option value="'+o+'">'+o+'</option>'; });
     html += '</select></div>';
     html += '<div class="field"><label>'+c.fDate+'</label><div class="date-input-wrap">'+
       '<input type="text" id="edateInput" name="edate" autocomplete="off" readonly required placeholder="" />'+
       '<span class="date-icon">'+icon('calendar')+'</span></div></div>';
-    html += field(c.fPlace,'text','eplace');
+    html += field(c.fPlace,'text','eplace',null,true);
     html += field(c.fGuests,'number','eguests');
     html += '</div></fieldset>';
 
@@ -1443,8 +1444,9 @@
     return html;
   }
 
-  function field(labelText,type,name,extra){
-    return '<div class="field '+(extra||'')+'"><label>'+labelText+'</label><input type="'+type+'" name="'+name+'" required /></div>';
+  function field(labelText,type,name,extra,markRequired){
+    var mark = markRequired ? '<span class="required-mark">*</span>' : '';
+    return '<div class="field '+(extra||'')+'"><label>'+labelText+mark+'</label><input type="'+type+'" name="'+name+'" required /></div>';
   }
 
   var RENDERERS = {
