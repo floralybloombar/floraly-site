@@ -387,6 +387,11 @@
     background:var(--sage-soft);color:#fff;font-weight:700;font-size:.92rem;
   }
   .form-success.show{display:block;}
+  .form-error{
+    display:none;margin-top:20px;padding:16px 22px;border-radius:18px;
+    background:var(--raspberry);color:#fff;font-weight:700;font-size:.92rem;
+  }
+  .form-error.show{display:block;}
 
   .faq-list{margin-top:20px;display:flex;flex-direction:column;gap:12px;}
   .faq-item{background:var(--linen);border-radius:18px;padding:2px 22px;box-shadow:0 12px 26px -22px rgba(157,90,110,0.45);}
@@ -497,9 +502,17 @@
   </footer>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 (function(){
   "use strict";
+
+  /* ============ SUPABASE ============ */
+  var SUPABASE_URL = "https://lrjmyjgcnfylkrkveknd.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_AvikJMjhh7MGD2IviP07yA_nedTSqej";
+  var sbClient = (window.supabase && window.supabase.createClient)
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+    : null;
 
   /* ============ ICONS ============ */
   var ICONS = {
@@ -742,6 +755,7 @@
         submit:"Envoyer ma demande",
         formNote:"Formulaire de démonstration — à connecter à votre système d'envoi.",
         successMsg:"Merci! Votre demande a bien été reçue. Nous vous répondrons rapidement.",
+        errorMsg:"Une erreur est survenue lors de l'envoi. Veuillez réessayer ou nous écrire directement à floralybloombar@gmail.com.",
         sideTitle:"À bientôt dans votre événement",
         sideText:"Décrivez-nous votre vision et nous revenons vers vous avec une proposition sur mesure.",
         sideArea:"Grand Montréal & environs",
@@ -951,6 +965,7 @@
         submit:"Send My Request",
         formNote:"Demo form — connect it to your email or CRM system to make it functional.",
         successMsg:"Thank you! Your request has been received. We'll get back to you shortly.",
+        errorMsg:"Something went wrong while sending your request. Please try again or email us directly at floralybloombar@gmail.com.",
         sideTitle:"See you at your event",
         sideText:"Describe your vision and we'll come back to you with a tailored proposal.",
         sideArea:"Greater Montréal & surrounding area",
@@ -1335,7 +1350,7 @@
     html += '</fieldset>';
 
     html += '<fieldset><legend>'+c.visionTitle+'</legend>';
-    html += '<div class="field full"><label>'+c.fVisionLabel+'</label><textarea placeholder="'+c.visionPlaceholder+'"></textarea></div>';
+    html += '<div class="field full"><label>'+c.fVisionLabel+'</label><textarea name="vision" placeholder="'+c.visionPlaceholder+'"></textarea></div>';
     html += '</fieldset>';
 
     html += '<fieldset><legend>'+c.hearTitle+'</legend><div class="choice-row">';
@@ -1347,6 +1362,7 @@
     html += '<button type="submit" class="btn btn-primary">'+c.submit+' '+icon('arrow')+'</button>';
     html += '<div class="form-note">'+c.formNote+'</div>';
     html += '<div class="form-success" id="formSuccess">'+c.successMsg+'</div>';
+    html += '<div class="form-error" id="formError">'+c.errorMsg+'</div>';
     html += '</form>';
 
     html += '<div class="contact-side">';
@@ -1535,11 +1551,47 @@
   document.addEventListener('submit', function(e){
     if(e.target && e.target.id === 'contactForm'){
       e.preventDefault();
+      var form = e.target;
       var success = document.getElementById('formSuccess');
-      if(success){ success.classList.add('show'); }
-      e.target.querySelectorAll('input[type="text"],input[type="email"],input[type="tel"],input[type="number"],textarea').forEach(function(el){ el.value=''; });
-      calState.selectedDate = null;
-      closeCalendar();
+      var errorEl = document.getElementById('formError');
+      var submitBtn = form.querySelector('button[type="submit"]');
+      var fd = new FormData(form);
+      var payload = {
+        first_name: fd.get('fname') || '',
+        last_name: fd.get('lname') || '',
+        email: fd.get('email') || '',
+        phone: fd.get('phone') || '',
+        event_type: [fd.get('expType'), fd.get('etype')].filter(Boolean).join(' — '),
+        package: fd.get('package') || '',
+        event_date: fd.get('edate') || '',
+        location: fd.get('eplace') || '',
+        guests: fd.get('eguests') || '',
+        vision: fd.get('vision') || '',
+        heard_about: fd.get('heard') || ''
+      };
+      if(success){ success.classList.remove('show'); }
+      if(errorEl){ errorEl.classList.remove('show'); }
+      if(!sbClient){
+        if(errorEl){ errorEl.classList.add('show'); }
+        return;
+      }
+      if(submitBtn){ submitBtn.disabled = true; }
+      sbClient.from('submissions').insert([payload]).then(function(res){
+        if(submitBtn){ submitBtn.disabled = false; }
+        if(res && res.error){
+          console.error('Supabase insert error:', res.error);
+          if(errorEl){ errorEl.classList.add('show'); }
+          return;
+        }
+        if(success){ success.classList.add('show'); }
+        form.querySelectorAll('input[type="text"],input[type="email"],input[type="tel"],input[type="number"],textarea').forEach(function(el){ el.value=''; });
+        calState.selectedDate = null;
+        closeCalendar();
+      }).catch(function(err){
+        if(submitBtn){ submitBtn.disabled = false; }
+        console.error('Supabase insert exception:', err);
+        if(errorEl){ errorEl.classList.add('show'); }
+      });
     }
   });
 
