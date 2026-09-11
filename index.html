@@ -1000,6 +1000,36 @@
   /* ============ STATE ============ */
   var state = { lang:"fr", page:"home" };
   var calState = { viewDate:new Date(), selectedDate:null };
+  var livePackages = null;
+
+  function getTiersData(lang){
+    if(livePackages && livePackages.length){
+      return livePackages.map(function(p){
+        return {
+          name: lang==='fr' ? p.name_fr : p.name_en,
+          tagline: lang==='fr' ? p.tagline_fr : p.tagline_en,
+          badge: (lang==='fr' ? p.badge_fr : p.badge_en) || '',
+          text: lang==='fr' ? p.text_fr : p.text_en,
+          list: (lang==='fr' ? p.features_fr : p.features_en) || [],
+          minimum: lang==='fr' ? p.minimum_fr : p.minimum_en,
+          price: lang==='fr' ? p.price_fr : p.price_en
+        };
+      });
+    }
+    return CONTENT[lang].experiences.tiers;
+  }
+
+  function fetchPackages(){
+    if(!sbClient) return;
+    sbClient.from('packages').select('*').eq('active', true).order('sort_order', {ascending:true})
+      .then(function(res){
+        if(res && !res.error && res.data && res.data.length){
+          livePackages = res.data;
+          if(state.page === 'experiences' || state.page === 'contact'){ renderAll(); }
+        }
+      })
+      .catch(function(err){ console.error('Supabase packages fetch error:', err); });
+  }
 
   /* ============ CALENDAR WIDGET ============ */
   function calLocale(){ return state.lang === 'fr' ? 'fr-CA' : 'en-CA'; }
@@ -1180,7 +1210,7 @@
     html += '<section class="block"><div class="container">';
     html += '<h2 class="center">'+e.tiersTitle+'</h2>';
     html += '<div class="tier-grid" style="align-items:stretch;">';
-    e.tiers.forEach(function(tier){
+    getTiersData(state.lang).forEach(function(tier){
       html += '<div class="tier-card" style="display:flex;flex-direction:column;">';
       if(tier.badge){ html += '<span class="chip" style="align-self:flex-start;margin-bottom:14px;background:var(--rose);color:var(--linen);">'+tier.badge+'</span>'; }
       html += '<h3>'+tier.name+'</h3>';
@@ -1394,9 +1424,14 @@
     var info = c.packageInfo[typeVal];
     if(!info) return '';
     var html = '<span class="pkg-label">'+info.note+'</span>';
-    if(info.options && info.options.length){
+    var options = info.options;
+    if(options && options.length){
+      var tiers = getTiersData(state.lang);
+      if(tiers && tiers.length){
+        options = tiers.map(function(tr){ return {name: tr.name, price: tr.price}; });
+      }
       html += '<div class="choice-row" style="margin-top:12px;">';
-      info.options.forEach(function(o,i){
+      options.forEach(function(o,i){
         html += '<label class="choice"><input type="radio" name="package" value="'+o.name+'" '+(i===0?'checked':'')+'>'+o.name+' — '+o.price+'</label>';
       });
       html += '</div>';
@@ -1604,6 +1639,7 @@
   var initialPage = location.hash.replace('#','');
   if(RENDERERS[initialPage]) state.page = initialPage;
   renderAll();
+  fetchPackages();
 })();
 </script>
 </body>
