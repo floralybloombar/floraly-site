@@ -740,6 +740,8 @@
         fFirst:"Prénom", fLast:"Nom", fEmail:"Courriel", fPhone:"Téléphone",
         eventTitle:"Votre événement",
         fType:"Type d'événement", fDate:"Date", fPlace:"Lieu", fGuests:"Nombre d'invités",
+        fTypePlaceholder:"Sélectionnez un type d'événement",
+        fTypeOptions:["Anniversaire","Mariage","Fête de la mariée","Fête prénatale","Enterrement de vie de jeune fille","Fiançailles","Soirée entre amies","Événement corporatif","Autre"],
         expTitle:"Votre expérience",
         expTypeOptions:["Événement privé","Mariage","Corporatif"],
         packageInfo:{
@@ -950,6 +952,8 @@
         fFirst:"First Name", fLast:"Last Name", fEmail:"Email", fPhone:"Phone",
         eventTitle:"Your Event",
         fType:"Event Type", fDate:"Date", fPlace:"Location", fGuests:"Number of Guests",
+        fTypePlaceholder:"Select an event type",
+        fTypeOptions:["Birthday","Wedding","Bridal Shower","Baby Shower","Bachelorette Party","Engagement","Girls' Night","Corporate Event","Other"],
         expTitle:"Your Experience",
         expTypeOptions:["Private Event","Wedding","Corporate"],
         packageInfo:{
@@ -1351,7 +1355,7 @@
 
     html += '<section class="block" style="padding-top:20px;"><div class="container contact-grid">';
 
-    html += '<form id="contactForm" novalidate>';
+    html += '<form id="contactForm">';
 
     html += '<fieldset><legend>'+c.infoTitle+'</legend><div class="form-grid">';
     html += field(c.fFirst,'text','fname');
@@ -1361,9 +1365,12 @@
     html += '</div></fieldset>';
 
     html += '<fieldset><legend>'+c.eventTitle+'</legend><div class="form-grid">';
-    html += field(c.fType,'text','etype');
+    html += '<div class="field"><label>'+c.fType+'</label><select name="etype" required>';
+    html += '<option value="" disabled selected>'+c.fTypePlaceholder+'</option>';
+    c.fTypeOptions.forEach(function(o){ html += '<option value="'+o+'">'+o+'</option>'; });
+    html += '</select></div>';
     html += '<div class="field"><label>'+c.fDate+'</label><div class="date-input-wrap">'+
-      '<input type="text" id="edateInput" name="edate" autocomplete="off" readonly placeholder="" />'+
+      '<input type="text" id="edateInput" name="edate" autocomplete="off" readonly required placeholder="" />'+
       '<span class="date-icon">'+icon('calendar')+'</span></div></div>';
     html += field(c.fPlace,'text','eplace');
     html += field(c.fGuests,'number','eguests');
@@ -1389,7 +1396,6 @@
     html += '</div></fieldset>';
 
     html += '<button type="submit" class="btn btn-primary">'+c.submit+' '+icon('arrow')+'</button>';
-    html += '<div class="form-note">'+c.formNote+'</div>';
     html += '<div class="form-success" id="formSuccess">'+c.successMsg+'</div>';
     html += '<div class="form-error" id="formError">'+c.errorMsg+'</div>';
     html += '</form>';
@@ -1438,7 +1444,7 @@
   }
 
   function field(labelText,type,name,extra){
-    return '<div class="field '+(extra||'')+'"><label>'+labelText+'</label><input type="'+type+'" name="'+name+'" /></div>';
+    return '<div class="field '+(extra||'')+'"><label>'+labelText+'</label><input type="'+type+'" name="'+name+'" required /></div>';
   }
 
   var RENDERERS = {
@@ -1618,6 +1624,7 @@
         }
         if(success){ success.classList.add('show'); }
         form.querySelectorAll('input[type="text"],input[type="email"],input[type="tel"],input[type="number"],textarea').forEach(function(el){ el.value=''; });
+        form.querySelectorAll('select[name="etype"]').forEach(function(el){ el.selectedIndex = 0; });
         calState.selectedDate = null;
         closeCalendar();
       }).catch(function(err){
