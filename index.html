@@ -116,8 +116,8 @@
     text-decoration:none;
     display:flex;align-items:center;
   }
-  .logo-img{height:58px;width:58px;display:block;border-radius:50%;}
-  .mobile-menu-top .logo-img{height:64px;width:64px;}
+  .logo-img{height:72px;width:72px;display:block;border-radius:50%;}
+  .mobile-menu-top .logo-img{height:80px;width:80px;}
   .main-nav{display:flex;align-items:center;gap:6px;}
   .nav-link{
     background:none;border:none;padding:8px 14px;
@@ -271,8 +271,8 @@
     box-shadow:0 16px 30px -24px rgba(157,90,110,0.5);
   }
   .value-card::before{
-    content:"";display:block;width:34px;height:34px;border-radius:50%;
-    background:var(--sage-soft);margin-bottom:16px;
+    content:"🌸";display:block;width:34px;height:34px;
+    font-size:26px;line-height:34px;margin-bottom:16px;
   }
   .value-card h3{font-size:1.1rem;margin-bottom:10px;}
   .value-card p{font-size:.92rem;color:var(--bark-soft);line-height:1.6;}
@@ -577,23 +577,23 @@
 
   var CONTENT = {
     fr: {
-      logoSub:"Bloom Bar",
+      logoSub:"Bar à fleurs",
       nav:{home:"Accueil",concept:"Notre concept",experiences:"Nos expériences",private:"Événements privés",corporate:"Corporatif",about:"À propos",contact:"Contact",book:"Réserver"},
       home:{
-        heroEyebrow:"Bloom Bar mobile — Grand Montréal",
+        heroEyebrow:"Bar à fleurs mobile — Grand Montréal",
         heroSub:"Expériences florales",
         heroTagline:"Des fleurs à votre image.",
         heroText:"Une expérience créative et immersive où vos invités créent leur propre bouquet, partagent un moment unique et repartent avec une création qui leur ressemble.",
         ctaDiscover:"Découvrir FLORALY",
         ctaPlan:"Planifier mon événement",
         whatTitle:"Plus qu'un bouquet. Une expérience.",
-        whatText:"FLORALY transforme les fleurs en une expérience sociale, créative et mémorable. Notre Bloom Bar mobile s'installe directement dans vos événements pour permettre à chacun de choisir, composer et personnaliser son bouquet.",
+        whatText:"FLORALY transforme les fleurs en une expérience sociale, créative et mémorable. Notre bar à fleurs mobile s'installe directement dans vos événements pour permettre à chacun de choisir, composer et personnaliser son bouquet.",
         whatCta:"Découvrir notre concept",
         occasionsTitle:"Pour toutes vos occasions",
         occasions:[
           {label:"Anniversaires",icon:"cake"},
-          {label:"Mariages & bridal showers",icon:"ring"},
-          {label:"Baby showers",icon:"heart"},
+          {label:"Mariages",icon:"ring"},
+          {label:"Fêtes prénatales",icon:"heart"},
           {label:"Événements corporatifs",icon:"briefcase"},
           {label:"Soirées entre amies",icon:"sparkle"},
           {label:"Événements privés",icon:"door"}
@@ -607,7 +607,7 @@
           {n:"04",title:"Ils repartent avec leur création",text:"Un souvenir floral à conserver et à faire fleurir."}
         ],
         whyTitle:"Créatif. Personnalisé. Mémorable.",
-        why:["Une expérience interactive","Entièrement personnalisable","Un concept esthétique et unique","Un Bloom Bar mobile","Une activité qui rassemble"],
+        why:["Une expérience interactive","Entièrement personnalisable","Un concept esthétique et unique","Un bar à fleurs mobile","Une activité qui rassemble"],
         igTitle:"Suivez l'univers FLORALY",
         igNote:"Aperçu — connectez votre flux Instagram ici.",
         ctaBannerTitle:"Créons quelque chose de floral.",
@@ -619,7 +619,7 @@
         title:"Une nouvelle façon de célébrer les fleurs.",
         intro:[
           "FLORALY est née d'une envie simple : transformer les fleurs en moments de connexion. Nous croyons que les plus beaux souvenirs sont ceux que l'on crée ensemble.",
-          "Notre Bloom Bar apporte une expérience florale interactive directement à vos événements. Chaque invité choisit ses fleurs, joue avec les couleurs et les textures et compose un bouquet qui lui ressemble.",
+          "Notre bar à fleurs apporte une expérience florale interactive directement à vos événements. Chaque invité choisit ses fleurs, joue avec les couleurs et les textures et compose un bouquet qui lui ressemble.",
           "Parce qu'au-delà des fleurs, FLORALY crée des moments à partager, des souvenirs à emporter et des expériences que l'on a envie de raconter."
         ],
         missionTitle:"Notre mission",
@@ -641,9 +641,9 @@
         intro:"Que vous organisiez une célébration intime, un grand événement ou une activation de marque, nous proposons différents niveaux d'expérience afin de trouver le parfait équilibre entre fleurs, créativité, personnalisation et accompagnement.",
         categoriesTitle:"Trois univers, une même envie : faire vivre les fleurs autrement.",
         categories:[
-          {name:"Célébrations privées",text:"Anniversaires, bridal showers, baby showers, garden parties et autres moments à célébrer.",nav:"private"},
+          {name:"Célébrations privées",text:"Anniversaires, fêtes de la mariée, fêtes prénatales, réceptions en plein air et autres moments à célébrer.",nav:"private"},
           {name:"Mariages",text:"Une expérience florale conçue pour s'harmoniser à votre décor, votre palette et l'atmosphère de votre journée.",scrollId:"forfait-mariage"},
-          {name:"Événements corporatifs",text:"Activations, lancements, événements clients, team building et expériences de marque.",nav:"corporate"}
+          {name:"Événements corporatifs",text:"Activations, lancements, événements clients, consolidation d'équipe et expériences de marque.",nav:"corporate"}
         ],
         categoriesNote:"Nos forfaits constituent le point de départ. Chaque expérience FLORALY peut être adaptée à votre événement, de la sélection florale aux détails de personnalisation. Les prix varient selon le nombre d'invités, le niveau de personnalisation et les besoins de votre événement.",
         tiersTitle:"Nos forfaits Célébrations privées",
@@ -683,8 +683,8 @@
         },
         workshopsTitle:"Ateliers floraux",
         workshopsFor:"Pour :",
-        workshopsList:["Girls' nights","Team building","Événements privés","Activités saisonnières"],
-        popupsTitle:"Pop-ups",
+        workshopsList:["Soirées entre amies","Consolidation d'équipe","Événements privés","Activités saisonnières"],
+        popupsTitle:"Kiosques éphémères",
         popupsText:"Retrouvez FLORALY lors d'événements publics et de collaborations — une occasion de découvrir notre univers floral et de composer votre propre création sur place.",
         cta:"Planifions votre expérience",
         care:{
@@ -705,15 +705,15 @@
       private:{
         eyebrow:"Événements privés",
         title:"Votre événement. Votre ambiance. Vos fleurs.",
-        text:"Anniversaire, bridal shower, baby shower ou simplement l'envie de rassembler les gens que vous aimez : FLORALY habille votre événement d'une expérience florale à votre image, pensée dans les moindres détails.",
-        occasions:["Anniversaire","Mariage","Bridal Shower","Baby Shower","Bachelorette","Engagement","Girls' Night","Fête privée"],
+        text:"Anniversaire, fête de la mariée, fête prénatale ou simplement l'envie de rassembler les gens que vous aimez : FLORALY habille votre événement d'une expérience florale à votre image, pensée dans les moindres détails.",
+        occasions:["Anniversaire","Mariage","Fête de la mariée","Fête prénatale","Enterrement de vie de jeune fille","Fiançailles","Soirée entre amies","Fête privée"],
         cta:"Planifier mon événement"
       },
       corporate:{
         eyebrow:"Corporatif",
         title:"Une expérience qui rassemble vos équipes.",
         forText:"Pour :",
-        list:["Team building","Employee appreciation","Corporate parties","Client events","Brand activations","Networking events","Holiday parties","Women's events"],
+        list:["Consolidation d'équipe","Reconnaissance des employés","Fêtes corporatives","Événements clients","Activations de marque","Événements de réseautage","Fêtes de fin d'année","Événements pour femmes"],
         exampleText:"Offrez à vos équipes une activité créative, élégante et accessible qui favorise les échanges et permet à chacun de repartir avec une création personnalisée.",
         brandingTitle:"FLORALY × VOTRE MARQUE",
         brandingList:["Couleurs corporatives","Rubans personnalisés","Cartes","Logo","Emballage","Expérience sur mesure"],
@@ -1098,7 +1098,7 @@
     var h = t.home;
     var html = '';
     html += '<section class="hero"><div class="container hero-grid">';
-    html += '<div><span class="eyebrow">'+h.heroEyebrow+'</span>';
+    html += '<div>';
     html += '<h1 class="hero-title">FLORALY</h1>';
     html += '<div class="hero-sub">'+h.heroSub+'</div>';
     html += '<p class="hero-tagline">'+h.heroTagline+'</p>';
@@ -1145,7 +1145,6 @@
 
     html += '<section class="block"><div class="container center">';
     html += '<h2>'+h.igTitle+'</h2>';
-    html += '<div class="kicker" style="margin-top:10px;">'+t.contact.sideHandle+'</div>';
     html += '<div class="ig-grid">';
     var tiles = ['var(--blossom)','var(--champagne)','var(--sage-soft)','var(--rose)','var(--blossom-deep)','var(--sage)'];
     tiles.forEach(function(c){ html += '<div class="ig-tile" style="background:'+c+';color:rgba(255,255,255,.75)">'+icon('leaf')+'</div>'; });
@@ -1401,7 +1400,6 @@
     html += '<div class="cline">'+icon('pin')+'<span>'+c.sideArea+'</span></div>';
     html += '<div class="cline">'+icon('clock')+'<span>'+c.sideHours+'</span></div>';
     html += '<div class="cline">'+icon('mail')+'<a href="mailto:'+c.sideEmail+'" style="color:inherit;text-decoration:none;">'+c.sideEmail+'</a></div>';
-    html += '<div class="cline">'+icon('ig')+'<span>'+c.sideHandle+'</span></div>';
     html += '</div>';
 
     html += '</div></section>';
@@ -1465,11 +1463,11 @@
     html += '<div><h4>'+f.navHeading+'</h4><div class="footer-links">';
     NAV_ORDER.slice(0,6).forEach(function(p){ html += '<button data-nav="'+p+'">'+t.nav[p]+'</button>'; });
     html += '</div></div>';
-    html += '<div><h4>'+f.contactHeading+'</h4><div class="footer-links"><span style="display:block;padding:5px 0;color:rgba(238,226,219,.75);">'+f.area+'</span><a href="mailto:'+t.contact.sideEmail+'" style="display:block;padding:5px 0;color:rgba(238,226,219,.75);text-decoration:none;">'+t.contact.sideEmail+'</a><span style="display:block;padding:5px 0;color:rgba(238,226,219,.75);">'+t.contact.sideHandle+'</span></div></div>';
+    html += '<div><h4>'+f.contactHeading+'</h4><div class="footer-links"><span style="display:block;padding:5px 0;color:rgba(238,226,219,.75);">'+f.area+'</span><a href="mailto:'+t.contact.sideEmail+'" style="display:block;padding:5px 0;color:rgba(238,226,219,.75);text-decoration:none;">'+t.contact.sideEmail+'</a></div></div>';
     html += '<div><h4>'+f.followHeading+'</h4><div class="footer-links"><button data-nav="contact">'+t.home.ctaBannerBtn+'</button></div></div>';
     grid.innerHTML = html;
     document.getElementById('footerBottom').innerHTML =
-      '<span>&copy; '+new Date().getFullYear()+' FLORALY. '+f.rights+'</span><span>'+t.contact.sideHandle+'</span>';
+      '<span>&copy; '+new Date().getFullYear()+' FLORALY. '+f.rights+'</span>';
   }
 
   /* ============ CORE ============ */
