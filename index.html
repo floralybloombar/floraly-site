@@ -454,6 +454,54 @@
     .ig-grid{grid-template-columns:repeat(3,1fr);}
     .footer-grid{grid-template-columns:1fr;}
   }
+
+  /* ---------- journal ---------- */
+  .journal-list{display:flex;flex-direction:column;gap:26px;max-width:860px;margin:0 auto;}
+  .journal-card{
+    background:var(--linen);border-radius:26px;padding:clamp(26px,4vw,40px);
+    box-shadow:0 18px 34px -26px rgba(157,90,110,0.5);
+    display:flex;gap:28px;align-items:center;
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .journal-card:hover{transform:translateY(-4px);box-shadow:0 24px 40px -22px rgba(157,90,110,0.55);}
+  .journal-thumb{flex:0 0 200px;}
+  .journal-thumb img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:20px;}
+  .journal-card-body{flex:1;min-width:0;}
+  .journal-date{font-size:.78rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);}
+  .journal-card h2{font-size:clamp(1.6rem,3vw,2.1rem);font-weight:600;line-height:1.15;margin:10px 0 12px;text-wrap:balance;}
+  .journal-card h2 a{text-decoration:none;color:var(--bark);transition:color .2s ease;}
+  .journal-card h2 a:hover{color:var(--rose);}
+  .journal-card p{color:var(--bark-soft);line-height:1.7;}
+  .journal-more{
+    display:inline-flex;align-items:center;gap:8px;margin-top:16px;
+    font-weight:700;font-size:.92rem;color:var(--rose);text-decoration:none;
+  }
+  .journal-more svg{width:16px;height:16px;transition:transform .2s ease;}
+  .journal-more:hover{color:var(--rose-deep);}
+  .journal-more:hover svg{transform:translateX(4px);}
+  .article-wrap{max-width:780px;}
+  .back-link{
+    display:inline-flex;align-items:center;gap:6px;text-decoration:none;
+    font-weight:700;font-size:.9rem;color:var(--rose);
+  }
+  .back-link svg{width:16px;height:16px;}
+  .back-link:hover{color:var(--rose-deep);}
+  .article-cover{width:100%;border-radius:26px;margin-bottom:36px;}
+  .article-body p{font-size:1.1rem;line-height:1.85;color:var(--bark);margin:0 0 1.3em;}
+  .article-body h2{font-size:clamp(1.6rem,3vw,2rem);color:var(--rose-deep);margin:1.9em 0 .6em;}
+  .article-body h3{font-size:clamp(1.25rem,2.4vw,1.5rem);font-weight:600;color:var(--bark);margin:1.5em 0 .5em;}
+  .article-body blockquote{
+    margin:1.8em 0;padding:4px 0 4px 22px;border-left:3px solid var(--sage-soft);
+    font-family:var(--font-display);font-style:italic;font-size:1.4rem;line-height:1.5;color:var(--bark);
+  }
+  .article-body a{color:var(--rose);}
+  @media (min-width: 981px) and (max-width: 1180px){
+    .nav-link{padding:8px 10px;font-size:.86rem;}
+  }
+  @media (max-width: 600px){
+    .journal-card{flex-direction:column;align-items:stretch;gap:20px;}
+    .journal-thumb{flex:none;}
+  }
 </style>
 </head>
 <body>
@@ -491,6 +539,8 @@
     <section class="page" id="page-experiences" data-page="experiences"></section>
     <section class="page" id="page-private" data-page="private"></section>
     <section class="page" id="page-corporate" data-page="corporate"></section>
+    <section class="page" id="page-journal" data-page="journal"></section>
+    <section class="page" id="page-article" data-page="article"></section>
     <section class="page" id="page-about" data-page="about"></section>
     <section class="page" id="page-contact" data-page="contact"></section>
   </main>
@@ -504,6 +554,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="journal.js"></script>
 <script>
 (function(){
   "use strict";
@@ -574,12 +625,13 @@
   }
 
   /* ============ CONTENT ============ */
-  var NAV_ORDER = ["home","concept","experiences","private","corporate","about","contact"];
+  var NAV_ORDER = ["home","concept","experiences","private","corporate","journal","about","contact"];
+  var ARTICLES = (window.FLORALY_JOURNAL || []).slice();
 
   var CONTENT = {
     fr: {
       logoSub:"Bar à fleurs",
-      nav:{home:"Accueil",concept:"Notre concept",experiences:"Nos expériences",private:"Événements privés",corporate:"Corporatif",about:"À propos",contact:"Contact",book:"Réserver"},
+      nav:{home:"Accueil",concept:"Notre concept",experiences:"Nos expériences",private:"Événements privés",corporate:"Corporatif",journal:"Le Journal",about:"À propos",contact:"Contact",book:"Réserver"},
       home:{
         heroEyebrow:"Bar à fleurs mobile — Grand Montréal",
         heroSub:"Expériences florales",
@@ -779,6 +831,14 @@
           {q:"Et si la météo ou une situation imprévue affecte mon événement?",a:"Certaines circonstances indépendantes de notre volonté, comme des conditions météorologiques extrêmes ou des problèmes liés au lieu ou au transport, peuvent nécessiter une modification de l'expérience. Dans ce cas, nous travaillerons avec vous afin de trouver la meilleure solution possible."}
         ]
       },
+      journal:{
+        eyebrow:"Le Journal Floraly",
+        title:"Le Journal Floraly",
+        intro:"Inspirations, coulisses et conseils fleuris de l'équipe FLORALY.",
+        read:"Lire l'article",
+        back:"Retour au Journal",
+        empty:"Les premiers articles arrivent bientôt."
+      },
       footer:{
         tagline:"Des fleurs à votre image.",
         navHeading:"Navigation",
@@ -791,7 +851,7 @@
 
     en: {
       logoSub:"Bloom Bar",
-      nav:{home:"Home",concept:"Our Concept",experiences:"Experiences",private:"Private Events",corporate:"Corporate",about:"About",contact:"Contact",book:"Book Now"},
+      nav:{home:"Home",concept:"Our Concept",experiences:"Experiences",private:"Private Events",corporate:"Corporate",journal:"The Journal",about:"About",contact:"Contact",book:"Book Now"},
       home:{
         heroEyebrow:"Mobile Bloom Bar — Greater Montréal",
         heroSub:"Floral Experiences",
@@ -991,6 +1051,14 @@
           {q:"What if weather or an unforeseen situation affects my event?",a:"Certain circumstances beyond our control, like extreme weather or venue or transport issues, may require adjusting the experience. If that happens, we'll work with you to find the best possible solution."}
         ]
       },
+      journal:{
+        eyebrow:"The Floraly Journal",
+        title:"The Floraly Journal",
+        intro:"Inspiration, behind-the-scenes stories and floral tips from the FLORALY team.",
+        read:"Read the article",
+        back:"Back to the Journal",
+        empty:"The first articles are coming soon."
+      },
       footer:{
         tagline:"Flowers, your way.",
         navHeading:"Navigation",
@@ -1003,7 +1071,7 @@
   };
 
   /* ============ STATE ============ */
-  var state = { lang:"fr", page:"home" };
+  var state = { lang:"fr", page:"home", article:null };
   var calState = { viewDate:new Date(), selectedDate:null };
   var livePackages = null;
 
@@ -1449,16 +1517,87 @@
     return '<div class="field '+(extra||'')+'"><label>'+labelText+mark+'</label><input type="'+type+'" name="'+name+'" required /></div>';
   }
 
+  /* ============ RENDER: JOURNAL ============ */
+  function pick(a, lang){ return a[lang] || a.fr || a.en || {title:'',desc:'',body:[]}; }
+  function fmtDate(iso, lang){
+    if(!iso) return '';
+    var d = new Date(iso + 'T12:00:00');
+    if(isNaN(d.getTime())) return iso;
+    return new Intl.DateTimeFormat(lang==='fr'?'fr-CA':'en-CA',{day:'numeric',month:'long',year:'numeric'}).format(d);
+  }
+  function sortedArticles(){
+    return ARTICLES.slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+  }
+  function findArticle(slug){
+    for(var i=0;i<ARTICLES.length;i++){ if(ARTICLES[i].slug===slug) return ARTICLES[i]; }
+    return null;
+  }
+
+  function renderJournal(t){
+    var j = t.journal;
+    var html = '<section class="page-hero"><div class="container">';
+    html += '<span class="eyebrow">'+j.eyebrow+'</span><h1>'+j.title+'</h1>';
+    html += '<p class="lead" style="margin-top:22px;">'+j.intro+'</p>';
+    html += '</div></section>';
+    html += '<section class="block alt"><div class="container"><div class="journal-list">';
+    var list = sortedArticles();
+    if(!list.length){ html += '<p class="lead">'+j.empty+'</p>'; }
+    list.forEach(function(a){
+      var c = pick(a, state.lang);
+      var href = '#journal/'+a.slug;
+      html += '<article class="journal-card">';
+      if(a.image){ html += '<a href="'+href+'" class="journal-thumb"><img src="'+a.image+'" alt=""></a>'; }
+      html += '<div class="journal-card-body">';
+      if(a.date){ html += '<span class="journal-date">'+fmtDate(a.date,state.lang)+'</span>'; }
+      html += '<h2><a href="'+href+'">'+c.title+'</a></h2>';
+      html += '<p>'+c.desc+'</p>';
+      html += '<a class="journal-more" href="'+href+'">'+j.read+' '+icon('arrow')+'</a>';
+      html += '</div></article>';
+    });
+    html += '</div></div></section>';
+    return html;
+  }
+
+  function renderArticle(t){
+    var a = state.article ? findArticle(state.article) : null;
+    if(!a) return '';
+    var j = t.journal;
+    var c = pick(a, state.lang);
+    var html = '<section class="page-hero"><div class="container article-wrap">';
+    html += '<a class="back-link" href="#journal">'+icon('chevL')+' '+j.back+'</a>';
+    if(a.date){ html += '<span class="eyebrow" style="display:flex;margin-top:26px;">'+fmtDate(a.date,state.lang)+'</span>'; }
+    html += '<h1>'+c.title+'</h1>';
+    if(c.desc){ html += '<p class="lead" style="margin-top:20px;">'+c.desc+'</p>'; }
+    html += '</div></section>';
+    html += '<section class="block" style="padding-top:20px;"><div class="container article-wrap">';
+    if(a.image){ html += '<img class="article-cover" src="'+a.image+'" alt="">'; }
+    html += '<div class="article-body">';
+    (c.body||[]).forEach(function(line){
+      if(line.indexOf('### ')===0){ html += '<h3>'+line.slice(4)+'</h3>'; }
+      else if(line.indexOf('## ')===0){ html += '<h2>'+line.slice(3)+'</h2>'; }
+      else if(line.indexOf('> ')===0){ html += '<blockquote>'+line.slice(2)+'</blockquote>'; }
+      else { html += '<p>'+line+'</p>'; }
+    });
+    html += '</div>';
+    html += '<div class="btn-row" style="margin-top:48px;"><a class="btn btn-outline" href="#journal">'+icon('chevL')+' '+j.back+'</a>';
+    html += '<button class="btn btn-primary" data-nav="contact">'+t.nav.book+'</button></div>';
+    html += '</div></section>';
+    return html;
+  }
+
   var RENDERERS = {
     home: renderHome, concept: renderConcept, experiences: renderExperiences,
-    private: renderPrivate, corporate: renderCorporate, about: renderAbout, contact: renderContact
+    private: renderPrivate, corporate: renderCorporate, journal: renderJournal, article: renderArticle,
+    about: renderAbout, contact: renderContact
   };
 
   /* ============ HEADER / FOOTER / NAV ============ */
+  function navKey(page){ return page==="article" ? "journal" : page; }
+
   function renderNav(container, t, mobile){
     var html = '';
     NAV_ORDER.forEach(function(p){
-      html += '<button class="nav-link'+(state.page===p?' active':'')+'" data-nav="'+p+'">'+t.nav[p]+'</button>';
+      html += '<button class="nav-link'+(navKey(state.page)===p?' active':'')+'" data-nav="'+p+'">'+t.nav[p]+'</button>';
     });
     container.innerHTML = html;
   }
@@ -1469,7 +1608,7 @@
     var html = '';
     html += '<div><div class="footer-logo">FLORALY</div><div class="footer-tagline">'+f.tagline+'</div></div>';
     html += '<div><h4>'+f.navHeading+'</h4><div class="footer-links">';
-    NAV_ORDER.slice(0,6).forEach(function(p){ html += '<button data-nav="'+p+'">'+t.nav[p]+'</button>'; });
+    NAV_ORDER.slice(0,7).forEach(function(p){ html += '<button data-nav="'+p+'">'+t.nav[p]+'</button>'; });
     html += '</div></div>';
     html += '<div><h4>'+f.contactHeading+'</h4><div class="footer-links"><span style="display:block;padding:5px 0;color:rgba(238,226,219,.75);">'+f.area+'</span><a href="mailto:'+t.contact.sideEmail+'" style="display:block;padding:5px 0;color:rgba(238,226,219,.75);text-decoration:none;">'+t.contact.sideEmail+'</a></div></div>';
     html += '<div><h4>'+f.followHeading+'</h4><div class="footer-links"><button data-nav="contact">'+t.home.ctaBannerBtn+'</button></div></div>';
@@ -1491,6 +1630,7 @@
     NAV_ORDER.forEach(function(p){
       document.getElementById('page-'+p).innerHTML = RENDERERS[p](t);
     });
+    document.getElementById('page-article').innerHTML = RENDERERS.article(t);
     renderFooter(t);
     document.querySelectorAll('.lang-toggle button').forEach(function(b){
       b.classList.toggle('active', b.getAttribute('data-lang')===state.lang);
@@ -1505,9 +1645,13 @@
       s.classList.toggle('active', s.getAttribute('data-page')===page);
     });
     document.querySelectorAll('.nav-link').forEach(function(b){
-      b.classList.toggle('active', b.getAttribute('data-nav')===page);
+      b.classList.toggle('active', b.getAttribute('data-nav')===navKey(page));
     });
-    document.title = CONTENT[state.lang].nav[page] + ' · FLORALY';
+    var a = (page==='article' && state.article) ? findArticle(state.article) : null;
+    document.title = (a ? pick(a, state.lang).title : CONTENT[state.lang].nav[page]) + ' · FLORALY';
+    if(page!=='article' && /^#journal\//.test(location.hash) && window.history && history.replaceState){
+      history.replaceState(null, '', location.pathname + location.search + (page==='home' ? '' : '#'+page));
+    }
     if(!skipScroll){ window.scrollTo({top:0, behavior:'auto'}); }
     closeMobileMenu();
   }
@@ -1637,14 +1781,29 @@
     }
   });
 
-  window.addEventListener('hashchange', function(){
-    var p = location.hash.replace('#','');
-    if(RENDERERS[p]) showPage(p);
-  });
+  function routeFromHash(initial){
+    var h = location.hash.replace('#','');
+    if(h.indexOf('journal/')===0){
+      var slug = decodeURIComponent(h.slice(8));
+      if(findArticle(slug)){
+        state.article = slug;
+        document.getElementById('page-article').innerHTML = RENDERERS.article(CONTENT[state.lang]);
+        if(initial){ state.page = 'article'; } else { showPage('article'); }
+        return;
+      }
+      if(initial){ state.page = 'journal'; } else { showPage('journal'); }
+      return;
+    }
+    if(h && h!=='article' && RENDERERS[h]){
+      if(initial){ state.page = h; } else { showPage(h); }
+      return;
+    }
+    if(!initial && state.page==='article'){ showPage('journal'); }
+  }
+  window.addEventListener('hashchange', function(){ routeFromHash(false); });
 
   /* ============ INIT ============ */
-  var initialPage = location.hash.replace('#','');
-  if(RENDERERS[initialPage]) state.page = initialPage;
+  routeFromHash(true);
   renderAll();
   fetchPackages();
 })();
