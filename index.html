@@ -523,6 +523,43 @@
     .logo-img{height:56px;width:56px;}
     #headerBookBtn{display:none;}
   }
+
+  /* ---------- gallery ---------- */
+  .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(8px,1.6vw,18px);}
+  .gallery-tile{
+    padding:0;border:none;background:var(--tea-rose);border-radius:clamp(12px,2vw,22px);
+    overflow:hidden;aspect-ratio:4/5;display:block;cursor:zoom-in;
+    box-shadow:0 18px 34px -26px rgba(157,90,110,0.5);
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .gallery-tile img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease;}
+  .gallery-tile:hover{transform:translateY(-3px);box-shadow:0 24px 40px -22px rgba(157,90,110,0.55);}
+  .gallery-tile:hover img{transform:scale(1.04);}
+  .lightbox{
+    position:fixed;inset:0;z-index:100;background:rgba(36,22,29,.985);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;visibility:hidden;transition:opacity .25s ease, visibility .25s ease;
+  }
+  .lightbox.open{opacity:1;visibility:visible;}
+  .lb-stage{margin:0;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:100%;}
+  .lb-stage img{max-width:min(92vw,1400px);max-height:80vh;width:auto;height:auto;border-radius:14px;box-shadow:0 30px 70px -20px rgba(0,0,0,.6);}
+  .lb-stage figcaption{color:rgba(250,244,238,.75);font-size:.85rem;letter-spacing:.12em;}
+  .lb-btn{
+    position:absolute;display:flex;align-items:center;justify-content:center;
+    width:50px;height:50px;border-radius:50%;border:1px solid rgba(250,244,238,.6);
+    background:rgba(36,22,29,.55);color:#FAF4EE;transition:background .2s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .lb-btn:hover{background:rgba(36,22,29,.85);}
+  .lb-btn svg{width:24px;height:24px;}
+  .lb-close{top:18px;right:18px;}
+  .lb-prev{left:18px;top:50%;transform:translateY(-50%);}
+  .lb-next{right:18px;top:50%;transform:translateY(-50%);}
+  @media (max-width: 600px){
+    .lb-btn{width:42px;height:42px;}
+    .lb-prev{left:8px;} .lb-next{right:8px;} .lb-close{top:12px;right:12px;}
+    .lb-stage img{max-width:96vw;max-height:76vh;}
+  }
 </style>
 </head>
 <body>
@@ -561,6 +598,7 @@
     <section class="page" id="page-experiences" data-page="experiences"></section>
     <section class="page" id="page-private" data-page="private"></section>
     <section class="page" id="page-corporate" data-page="corporate"></section>
+    <section class="page" id="page-gallery" data-page="gallery"></section>
     <section class="page" id="page-journal" data-page="journal"></section>
     <section class="page" id="page-article" data-page="article"></section>
     <section class="page" id="page-about" data-page="about"></section>
@@ -575,8 +613,16 @@
   </footer>
 </div>
 
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
+  <button class="lb-btn lb-close" id="lbClose" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>
+  <button class="lb-btn lb-prev" id="lbPrev" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <button class="lb-btn lb-next" id="lbNext" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+  <figure class="lb-stage"><img id="lbImg" src="" alt=""><figcaption id="lbCount"></figcaption></figure>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="journal.js"></script>
+<script src="gallery.js"></script>
 <script>
 (function(){
   "use strict";
@@ -647,13 +693,14 @@
   }
 
   /* ============ CONTENT ============ */
-  var NAV_ORDER = ["home","concept","experiences","private","corporate","journal","about","contact"];
+  var NAV_ORDER = ["home","concept","experiences","private","corporate","gallery","journal","about","contact"];
   var ARTICLES = (window.FLORALY_JOURNAL || []).slice();
+  var GALLERY = (window.FLORALY_GALLERY || []).slice();
 
   var CONTENT = {
     fr: {
       logoSub:"Bar à fleurs",
-      nav:{home:"Accueil",concept:"Notre concept",experiences:"Nos expériences",private:"Événements privés",corporate:"Corporatif",journal:"Le Journal",about:"À propos",contact:"Contact",book:"Réserver"},
+      nav:{home:"Accueil",concept:"Notre concept",experiences:"Nos expériences",private:"Événements privés",corporate:"Corporatif",gallery:"Galerie",journal:"Le Journal",about:"À propos",contact:"Contact",book:"Réserver"},
       home:{
         heroEyebrow:"Bar à fleurs mobile — Grand Montréal",
         heroSub:"Expériences florales",
@@ -853,6 +900,15 @@
           {q:"Et si la météo ou une situation imprévue affecte mon événement?",a:"Certaines circonstances indépendantes de notre volonté, comme des conditions météorologiques extrêmes ou des problèmes liés au lieu ou au transport, peuvent nécessiter une modification de l'expérience. Dans ce cas, nous travaillerons avec vous afin de trouver la meilleure solution possible."}
         ]
       },
+      gallery:{
+        eyebrow:"Nos moments floraux",
+        title:"Galerie",
+        intro:"Un aperçu de nos expériences, de nos créations et des moments partagés autour des fleurs.",
+        close:"Fermer",
+        prev:"Photo précédente",
+        next:"Photo suivante",
+        empty:"Les premières photos arrivent bientôt."
+      },
       journal:{
         eyebrow:"Le Journal Floraly",
         title:"Le Journal Floraly",
@@ -873,7 +929,7 @@
 
     en: {
       logoSub:"Bloom Bar",
-      nav:{home:"Home",concept:"Our Concept",experiences:"Experiences",private:"Private Events",corporate:"Corporate",journal:"The Journal",about:"About",contact:"Contact",book:"Book Now"},
+      nav:{home:"Home",concept:"Our Concept",experiences:"Experiences",private:"Private Events",corporate:"Corporate",gallery:"Gallery",journal:"The Journal",about:"About",contact:"Contact",book:"Book Now"},
       home:{
         heroEyebrow:"Mobile Bloom Bar — Greater Montréal",
         heroSub:"Floral Experiences",
@@ -1072,6 +1128,15 @@
           {q:"Can FLORALY adapt to the specifics of my event?",a:"Yes. We work with you to adapt the experience to your event's specifics, while taking into account available flowers, the season and the venue's characteristics."},
           {q:"What if weather or an unforeseen situation affects my event?",a:"Certain circumstances beyond our control, like extreme weather or venue or transport issues, may require adjusting the experience. If that happens, we'll work with you to find the best possible solution."}
         ]
+      },
+      gallery:{
+        eyebrow:"Our floral moments",
+        title:"Gallery",
+        intro:"A glimpse of our experiences, our creations and the moments shared around flowers.",
+        close:"Close",
+        prev:"Previous photo",
+        next:"Next photo",
+        empty:"The first photos are coming soon."
       },
       journal:{
         eyebrow:"The Floraly Journal",
@@ -1539,6 +1604,73 @@
     return '<div class="field '+(extra||'')+'"><label>'+labelText+mark+'</label><input type="'+type+'" name="'+name+'" required /></div>';
   }
 
+  /* ============ RENDER: GALLERY ============ */
+  function galleryAlt(g){ return (g && g.alt && (g.alt[state.lang] || g.alt.fr || g.alt.en)) || ''; }
+
+  function renderGallery(t){
+    var g = t.gallery;
+    var html = '<section class="page-hero"><div class="container">';
+    html += '<span class="eyebrow">'+g.eyebrow+'</span><h1>'+g.title+'</h1>';
+    html += '<p class="lead" style="margin-top:22px;">'+g.intro+'</p>';
+    html += '</div></section>';
+    html += '<section class="block alt"><div class="container">';
+    if(!GALLERY.length){ html += '<p class="lead">'+g.empty+'</p>'; }
+    else {
+      html += '<div class="gallery-grid">';
+      GALLERY.forEach(function(p, i){
+        html += '<button type="button" class="gallery-tile" data-gallery="'+i+'"><img src="'+p.src+'" alt="'+galleryAlt(p).replace(/"/g,'&quot;')+'" loading="lazy" decoding="async"></button>';
+      });
+      html += '</div>';
+    }
+    html += '</div></section>';
+    return html;
+  }
+
+  /* ---- lightbox ---- */
+  var lb = { open:false, i:0, lastFocus:null, touchX:null };
+  function lbEl(id){ return document.getElementById(id); }
+  function lbRender(){
+    var p = GALLERY[lb.i]; if(!p) return;
+    var img = lbEl('lbImg');
+    img.src = p.src; img.alt = galleryAlt(p);
+    lbEl('lbCount').textContent = (lb.i+1)+' / '+GALLERY.length;
+    var multi = GALLERY.length > 1;
+    lbEl('lbPrev').style.display = multi ? '' : 'none';
+    lbEl('lbNext').style.display = multi ? '' : 'none';
+    [1,-1].forEach(function(d){
+      var n = GALLERY[(lb.i+d+GALLERY.length)%GALLERY.length];
+      if(n){ var pre = new Image(); pre.src = n.src; }
+    });
+  }
+  function lbLabels(t){
+    lbEl('lbClose').setAttribute('aria-label', t.gallery.close);
+    lbEl('lbPrev').setAttribute('aria-label', t.gallery.prev);
+    lbEl('lbNext').setAttribute('aria-label', t.gallery.next);
+    lbEl('lightbox').setAttribute('aria-label', t.nav.gallery);
+  }
+  function openLightbox(i){
+    if(!GALLERY.length) return;
+    lb.i = i; lb.open = true; lb.lastFocus = document.activeElement;
+    lbRender();
+    var box = lbEl('lightbox');
+    box.classList.add('open'); box.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+    lbEl('lbClose').focus();
+  }
+  function closeLightbox(){
+    if(!lb.open) return;
+    lb.open = false;
+    var box = lbEl('lightbox');
+    box.classList.remove('open'); box.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+    if(lb.lastFocus && lb.lastFocus.focus){ lb.lastFocus.focus(); }
+  }
+  function stepLightbox(d){
+    if(GALLERY.length < 2) return;
+    lb.i = (lb.i + d + GALLERY.length) % GALLERY.length;
+    lbRender();
+  }
+
   /* ============ RENDER: JOURNAL ============ */
   function pick(a, lang){ return a[lang] || a.fr || a.en || {title:'',desc:'',body:[]}; }
   function fmtDate(iso, lang){
@@ -1609,7 +1741,7 @@
 
   var RENDERERS = {
     home: renderHome, concept: renderConcept, experiences: renderExperiences,
-    private: renderPrivate, corporate: renderCorporate, journal: renderJournal, article: renderArticle,
+    private: renderPrivate, corporate: renderCorporate, gallery: renderGallery, journal: renderJournal, article: renderArticle,
     about: renderAbout, contact: renderContact
   };
 
@@ -1630,7 +1762,7 @@
     var html = '';
     html += '<div><div class="footer-logo">FLORALY</div><div class="footer-tagline">'+f.tagline+'</div></div>';
     html += '<div><h4>'+f.navHeading+'</h4><div class="footer-links">';
-    NAV_ORDER.slice(0,7).forEach(function(p){ html += '<button data-nav="'+p+'">'+t.nav[p]+'</button>'; });
+    NAV_ORDER.slice(0,8).forEach(function(p){ html += '<button data-nav="'+p+'">'+t.nav[p]+'</button>'; });
     html += '</div></div>';
     html += '<div><h4>'+f.contactHeading+'</h4><div class="footer-links"><span style="display:block;padding:5px 0;color:rgba(238,226,219,.75);">'+f.area+'</span><a href="mailto:'+t.contact.sideEmail+'" style="display:block;padding:5px 0;color:rgba(238,226,219,.75);text-decoration:none;">'+t.contact.sideEmail+'</a></div></div>';
     html += '<div><h4>'+f.followHeading+'</h4><div class="footer-links"><button data-nav="contact">'+t.home.ctaBannerBtn+'</button></div></div>';
@@ -1648,6 +1780,7 @@
     document.getElementById('mobileLogoImg').src = logoSrc;
     document.getElementById('headerBookBtn').textContent = t.nav.book;
     document.getElementById('mobileBookBtn').textContent = t.nav.book;
+    lbLabels(t);
     renderNav(document.getElementById('mainNav'), t, false);
     renderNav(document.getElementById('mobileNav'), t, true);
     NAV_ORDER.forEach(function(p){
@@ -1803,6 +1936,35 @@
       });
     }
   });
+
+  /* ---- gallery events ---- */
+  document.addEventListener('click', function(e){
+    var tile = e.target.closest('[data-gallery]');
+    if(tile){ openLightbox(parseInt(tile.getAttribute('data-gallery'),10)); return; }
+    if(!lb.open) return;
+    if(e.target.closest('#lbClose')){ closeLightbox(); return; }
+    if(e.target.closest('#lbPrev')){ stepLightbox(-1); return; }
+    if(e.target.closest('#lbNext')){ stepLightbox(1); return; }
+    if(e.target.id === 'lightbox' || e.target.classList.contains('lb-stage')){ closeLightbox(); }
+  });
+  document.addEventListener('keydown', function(e){
+    if(!lb.open) return;
+    if(e.key === 'Escape'){ closeLightbox(); }
+    else if(e.key === 'ArrowLeft'){ stepLightbox(-1); }
+    else if(e.key === 'ArrowRight'){ stepLightbox(1); }
+    else if(e.key === 'Tab'){
+      var f = [lbEl('lbClose'), lbEl('lbPrev'), lbEl('lbNext')].filter(function(b){ return b.style.display !== 'none'; });
+      var idx = f.indexOf(document.activeElement);
+      e.preventDefault();
+      f[(idx + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus();
+    }
+  });
+  lbEl('lightbox').addEventListener('touchstart', function(e){ lb.touchX = e.changedTouches[0].clientX; }, {passive:true});
+  lbEl('lightbox').addEventListener('touchend', function(e){
+    if(lb.touchX === null) return;
+    var dx = e.changedTouches[0].clientX - lb.touchX; lb.touchX = null;
+    if(Math.abs(dx) > 50){ stepLightbox(dx < 0 ? 1 : -1); }
+  }, {passive:true});
 
   function routeFromHash(initial){
     var h = location.hash.replace('#','');
